@@ -1,0 +1,85 @@
+<div class="container">
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-val" style="color: var(--crit-color);">2</div>
+                <div class="stat-label">Critical</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" style="color: var(--warn-color);">1</div>
+                <div class="stat-label">Warnings</div>
+            </div>
+        </div>
+
+        <div class="alert-card">
+            <div class="status-bar bg-crit"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="service-name">KUBERNETES-CLUSTER</span>
+                    <span class="time">2 мин назад</span>
+                </div>
+                <div class="alert-msg">Pod CrashLoopBackOff: auth-api-76db</div>
+                <div class="alert-meta">Namespace: production | Restarts: 12</div>
+                <div class="actions">
+                    <button class="btn btn-ack" onclick="action('ACK', 'Auth API')">В работу</button>
+                    <button class="btn btn-mute" onclick="action('MUTE', 'Auth API')">Заглушить</button>
+                    <button class="btn btn-full" onclick="action('LOGS', 'Auth API')">Логи контейнера</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert-card">
+            <div class="status-bar bg-crit"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="service-name">POSTGRES-MAIN</span>
+                    <span class="time">5 мин назад</span>
+                </div>
+                <div class="alert-msg">Slow Queries Detected (> 2s)</div>
+                <div class="alert-meta">Source: 10.0.5.12 | Query: SELECT * FROM users...</div>
+                <div class="actions">
+                    <button class="btn btn-ack" onclick="action('ACK', 'DB')">В работу</button>
+                    <button class="btn btn-mute" onclick="action('MUTE', 'DB')">Заглушить</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert-card">
+            <div class="status-bar bg-warn"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="service-name">ELASTICSEARCH</span>
+                    <span class="time">14 мин назад</span>
+                </div>
+                <div class="alert-msg">Heap Memory usage > 85%</div>
+                <div class="alert-meta">Node: es-node-02 | JVM Heap: 7.2GB</div>
+                <div class="actions">
+                    <button class="btn btn-ack" onclick="action('ACK', 'ES')">В работу</button>
+                    <button class="btn btn-mute" onclick="action('MUTE', 'ES')">Заглушить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем приложение на весь экран
+
+        function action(type, service) {
+            // Виброотклик для "прод-ощущения"
+            tg.HapticFeedback.impactOccurred('medium');
+
+            if (type === 'ACK') {
+                tg.showPopup({
+                    title: 'Подтверждение',
+                    message: Вы берете инцидент [${service}] в работу?,
+                    buttons: [{id: 'ok', type: 'default', text: 'Да, я чиню'}]
+                });
+            } else if (type === 'LOGS') {
+                tg.showConfirm("Запросить последние 50 строк логов из Elasticsearch?");
+            } else {
+                alert(Действие: ${type} для ${service});
+            }
+        }
+    </script>
+</body>
+</html>
